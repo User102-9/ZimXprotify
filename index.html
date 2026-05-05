@@ -3,107 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zimify | Dashboard</title>
+    <title>Zimify | Advanced</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
-        
-        /* Drop Animation */
-        .drop-in { animation: dropDown 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; opacity: 0; transform: translateY(-50px); }
-        @keyframes dropDown { to { opacity: 1; transform: translateY(0); } }
-
-        .glass { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; }
-        .btn-white { background: #fff; color: #000; font-weight: 800; transition: 0.3s; }
-        .btn-white:hover { background: #ccc; transform: translateY(-2px); }
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.2; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 24px; }
+        .tab-btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; transition: 0.3s; opacity: 0.5; }
+        .tab-btn.active { background: #fff; color: #000; opacity: 1; }
+        #adminFloating { position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 9999; display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen">
+<body>
     <canvas id="rain"></canvas>
 
-    <!-- Intro / Auth Layer -->
-    <div id="authSection" class="text-center drop-in">
-        <h1 class="text-6xl font-black italic tracking-tighter mb-2">ZIMIFY</h1>
-        <p class="text-gray-500 uppercase tracking-widest text-xs mb-10">Advanced Link Infrastructure</p>
-        
-        <div class="flex gap-4 justify-center">
-            <button onclick="showModal('login')" class="btn-white px-8 py-3 rounded-full uppercase text-sm">Login</button>
-            <button onclick="showModal('signup')" class="border border-white px-8 py-3 rounded-full uppercase text-sm font-bold hover:bg-white hover:text-black transition">Sign Up</button>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4">
-        <div class="glass p-8 w-full max-w-sm">
-            <h2 class="text-2xl font-bold mb-6">Staff Login</h2>
-            <input type="text" id="user" placeholder="Username" class="w-full bg-transparent border-b border-white/20 p-3 mb-4 outline-none focus:border-white">
-            <input type="password" id="pass" placeholder="Password" class="w-full bg-transparent border-b border-white/20 p-3 mb-6 outline-none focus:border-white">
-            <button onclick="handleLogin()" class="btn-white w-full py-3 rounded-lg mb-4">Access Dashboard</button>
-            <button onclick="closeModals()" class="text-gray-500 text-xs uppercase font-bold w-full">Cancel</button>
-        </div>
-    </div>
-
-    <!-- Signup Modal -->
-    <div id="signupModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4">
-        <div class="glass p-8 w-full max-w-sm text-center">
-            <h2 class="text-2xl font-bold mb-6">Create Account</h2>
-            <button class="bg-[#5865F2] w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 mb-4 hover:brightness-110">
-                Link Discord Account
-            </button>
-            <p class="text-gray-500 text-xs mb-6">Discord verification is required to generate links.</p>
-            <button onclick="closeModals()" class="text-white text-xs underline uppercase">Back</button>
-        </div>
-    </div>
-
-    <!-- Admin Dashboard Layer -->
-    <div id="adminPanel" class="hidden fixed inset-0 bg-black p-10 overflow-y-auto">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-end mb-10">
-                <div>
-                    <h1 class="text-4xl font-black">ZIMIFY DASHBOARD</h1>
-                    <p class="text-gray-500">Welcome back, Zim.</p>
+    <!-- 1. LOGIN / SIGNUP SCREEN -->
+    <div id="entryScreen" class="h-screen flex items-center justify-center p-6">
+        <div class="glass p-10 w-full max-w-lg text-center">
+            <h1 class="text-5xl font-black mb-8 italic">ZIMIFY</h1>
+            
+            <div id="authForms">
+                <div id="loginForm">
+                    <input type="text" id="logUser" placeholder="Username" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-white/40">
+                    <input type="password" id="logPass" placeholder="Password" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-6 outline-none focus:border-white/40">
+                    <button onclick="handleEntry('login')" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase mb-4">Login</button>
+                    <p class="text-xs text-gray-500">Don't have an account? <button onclick="toggleAuth(false)" class="text-white underline">Sign Up</button></p>
                 </div>
-                <button onclick="location.reload()" class="text-red-500 font-bold text-xs border border-red-500/30 px-4 py-2 rounded">LOGOUT</button>
+
+                <div id="signupForm" class="hidden text-left">
+                    <label class="text-[10px] uppercase font-bold text-gray-500 mb-2 block">Choose Profile Picture</label>
+                    <div class="flex gap-3 mb-6 justify-between">
+                        <img src="https://dicebear.com" onclick="selectPfp(this)" class="w-12 h-12 rounded-full border-2 border-transparent cursor-pointer hover:border-white pfp-opt">
+                        <img src="https://dicebear.com" onclick="selectPfp(this)" class="w-12 h-12 rounded-full border-2 border-transparent cursor-pointer hover:border-white pfp-opt">
+                        <img src="https://dicebear.com" onclick="selectPfp(this)" class="w-12 h-12 rounded-full border-2 border-transparent cursor-pointer hover:border-white pfp-opt">
+                    </div>
+                    <input type="text" id="regUser" placeholder="New Username" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none">
+                    <input type="password" id="regPass" placeholder="New Password" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-6 outline-none">
+                    <button onclick="handleEntry('signup')" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase mb-4">Create Account</button>
+                    <button onclick="toggleAuth(true)" class="w-full text-gray-500 text-xs uppercase font-bold">Back to Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP CONTENT -->
+    <div id="mainApp" class="hidden h-screen flex flex-col p-6">
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-4">
+                <img id="userPfp" src="" class="w-12 h-12 rounded-full border border-white/20">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">Active Session</p>
+                    <h2 id="userNameDisplay" class="text-xl font-black">User</h2>
+                </div>
+            </div>
+            <div class="glass p-2 flex gap-2">
+                <button onclick="switchTab('gen')" class="tab-btn active" id="btn-gen">Generator</button>
+                <button onclick="switchTab('chat')" class="tab-btn" id="btn-chat">General Chat</button>
+                <button onclick="switchTab('faq')" class="tab-btn" id="btn-faq">Questions</button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+            <!-- Generator Tab -->
+            <div id="tab-gen" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="glass p-10 flex flex-col items-center">
+                    <h3 class="text-3xl font-black italic mb-6">LINK GENERATOR</h3>
+                    <input type="text" placeholder="Target Profile URL..." class="w-full bg-black border border-white/10 p-4 rounded-xl mb-4 text-center">
+                    <button class="w-full bg-white text-black py-4 rounded-xl font-black">GENERATE</button>
+                </div>
+                <div class="glass p-10 flex flex-col items-center">
+                    <h3 class="text-3xl font-black italic mb-6">TOOLS</h3>
+                    <div class="grid grid-cols-2 gap-4 w-full">
+                        <button class="border border-white/10 p-4 rounded-xl hover:bg-white/5">IP Logger</button>
+                        <button class="border border-white/10 p-4 rounded-xl hover:bg-white/5">Link Masker</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="glass p-6"><p class="text-xs text-gray-500 uppercase">Total Visitors</p><h3 class="text-3xl font-bold">1,248</h3></div>
-                <div class="glass p-6"><p class="text-xs text-gray-500 uppercase">Active Links</p><h3 class="text-3xl font-bold">14</h3></div>
-                <div class="glass p-6"><p class="text-xs text-gray-500 uppercase">Clicks (24h)</p><h3 class="text-3xl font-bold">402</h3></div>
+            <!-- Chat Tab -->
+            <div id="tab-chat" class="hidden max-w-3xl mx-auto h-full flex flex-col glass p-6">
+                <div id="chatBox" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
+                    <div class="text-xs text-gray-600 text-center uppercase tracking-widest font-bold py-4">Welcome to General Chat</div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Say something..." class="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl outline-none">
+                    <button onclick="sendMessage()" class="bg-white text-black px-8 rounded-xl font-bold">SEND</button>
+                </div>
             </div>
 
-            <h2 class="text-xl font-bold mb-4">Recent Traffic (IP Logs)</h2>
-            <div class="glass overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-white/5 uppercase text-[10px] text-gray-400">
-                        <tr><th class="p-4">Timestamp</th><th>IP Address</th><th>Location</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="ipLogs">
-                        <!-- Example Rows -->
-                        <tr class="border-t border-white/5"><td class="p-4">2026-05-05 14:22</td><td>82.165.11.201</td><td>United Kingdom</td><td class="text-green-500">Captured</td></tr>
-                        <tr class="border-t border-white/5"><td class="p-4">2026-05-05 14:19</td><td>104.21.18.232</td><td>United States</td><td class="text-green-500">Captured</td></tr>
-                    </tbody>
-                </table>
+            <!-- FAQ Tab -->
+            <div id="tab-faq" class="hidden max-w-4xl mx-auto space-y-4">
+                <div class="glass p-6">
+                    <h4 class="font-bold mb-2">How to use the generator?</h4>
+                    <p class="text-gray-400 text-sm">Paste your target's profile link and click generate to get a masked beaming link.</p>
+                </div>
             </div>
+        </main>
+    </div>
+
+    <!-- 3. FLOATING ADMIN PANEL (Only for Zim) -->
+    <div id="adminFloating" class="glass p-6 border-white/40 shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-black uppercase text-red-500">Zim's Command Hub</h3>
+            <button onclick="this.parentElement.parentElement.style.display='none'" class="text-xs text-gray-500">HIDE</button>
+        </div>
+        <div class="space-y-3">
+            <button onclick="adminCmd('view-ips')" class="w-full text-left text-xs bg-white/5 p-2 rounded hover:bg-white/10">🔍 View User IPs</button>
+            <button onclick="adminCmd('ban')" class="w-full text-left text-xs bg-red-950/20 text-red-400 p-2 rounded hover:bg-red-900/40">🚫 Ban/Mute User</button>
+            <button onclick="adminCmd('mod')" class="w-full text-left text-xs bg-blue-950/20 text-blue-400 p-2 rounded">⭐ Add Moderator</button>
         </div>
     </div>
 
     <script>
-        // Rain Background Logic
+        // Authentication & State
+        let currentUser = null;
+        let selectedPfpUrl = "https://dicebear.com";
+
+        function toggleAuth(isLogin) {
+            document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+            document.getElementById('signupForm').classList.toggle('hidden', isLogin);
+        }
+
+        function selectPfp(el) {
+            document.querySelectorAll('.pfp-opt').forEach(i => i.classList.remove('border-white'));
+            el.classList.add('border-white');
+            selectedPfpUrl = el.src;
+        }
+
+        function handleEntry(type) {
+            const user = type === 'login' ? document.getElementById('logUser').value : document.getElementById('regUser').value;
+            const pass = type === 'login' ? document.getElementById('logPass').value : document.getElementById('regPass').value;
+
+            if(!user || !pass) return alert("Fields missing!");
+
+            currentUser = { username: user, pfp: selectedPfpUrl };
+            
+            // SPECIAL ADMIN CHECK
+            if(user === 'zim' && pass === '2010') {
+                document.getElementById('adminFloating').style.display = 'block';
+            }
+
+            document.getElementById('entryScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userPfp').src = currentUser.pfp;
+            document.getElementById('userNameDisplay').innerText = currentUser.username;
+        }
+
+        // Tab System
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // Simple Local Chat
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            if(!input.value) return;
+            const chatBox = document.getElementById('chatBox');
+            const msg = `
+                <div class="flex gap-3 items-start">
+                    <img src="${currentUser.pfp}" class="w-8 h-8 rounded-full border border-white/10">
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-gray-500">${currentUser.username}</p>
+                        <p class="text-sm bg-white/5 p-3 rounded-xl rounded-tl-none">${input.value}</p>
+                    </div>
+                </div>
+            `;
+            chatBox.innerHTML += msg;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            input.value = "";
+        }
+
+        // Admin Commands
+        function adminCmd(type) {
+            if(type === 'view-ips') alert("Real IPs require a Vercel Serverless Function to capture backend data.");
+            if(type === 'ban') prompt("Enter IP or Username to Ban:");
+            if(type === 'mod') prompt("Enter Username to promote to Mod:");
+        }
+
+        // Rain Effect
         const canvas = document.getElementById('rain');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const columns = canvas.width / 20;
         const drops = Array(Math.floor(columns)).fill(1);
-
         function drawRain() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            ctx.font = '15px monospace';
-
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff'; ctx.font = '15px monospace';
             for (let i = 0; i < drops.length; i++) {
                 const text = String.fromCharCode(Math.random() * 128);
                 ctx.fillText(text, i * 20, drops[i] * 20);
@@ -111,29 +200,7 @@
                 drops[i]++;
             }
         }
-        setInterval(drawRain, 50);
-
-        // UI Logic
-        function showModal(type) {
-            document.getElementById(type + 'Modal').classList.remove('hidden');
-        }
-
-        function closeModals() {
-            document.querySelectorAll('#loginModal, #signupModal').forEach(m => m.classList.add('hidden'));
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            
-            if(u === 'zim' && p === '2010') {
-                document.getElementById('authSection').classList.add('hidden');
-                closeModals();
-                document.getElementById('adminPanel').classList.remove('hidden');
-            } else {
-                alert("Unauthorized Access Attempt.");
-            }
-        }
+        setInterval(drawRain, 40);
     </script>
 </body>
 </html>
