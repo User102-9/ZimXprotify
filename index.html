@@ -40,7 +40,6 @@
         .discord-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            background-color: #f0f0f0;
         }
 
         .discord-btn i {
@@ -49,20 +48,25 @@
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 3.5rem; /* Made slightly bigger */
             letter-spacing: 5px;
             text-transform: uppercase;
-            margin-top: 60px;
-            margin-bottom: 20px; /* Space between title and dashboard button */
+            margin-top: 80px; /* Pushed down more */
+            margin-bottom: 40px; /* More space before buttons */
             text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
             z-index: 2;
         }
 
-        /* Main Dashboard Button Styling */
-        .dashboard-btn {
+        /* Container to keep buttons side-by-side */
+        .btn-container {
+            display: flex;
+            gap: 20px;
             z-index: 2;
-            padding: 15px 40px;
-            font-size: 1rem;
+        }
+
+        .main-btn {
+            padding: 18px 45px; /* Bigger padding */
+            font-size: 1.1rem; /* Bigger font */
             color: white;
             background: transparent;
             border: 2px solid #ff0000;
@@ -72,13 +76,18 @@
             letter-spacing: 2px;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-            animation: pulse 2s infinite;
+            text-align: center;
         }
 
-        .dashboard-btn:hover {
+        .main-btn:hover {
             background-color: #ff0000;
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
             transform: scale(1.05);
+        }
+
+        /* Pulsing effect only for the Dashboard to highlight it */
+        .dashboard {
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
@@ -110,8 +119,11 @@
 
     <h1>BEAM ZERO</h1>
 
-    <!-- New Main Dashboard Button -->
-    <a href="#" class="dashboard-btn">Main Dashboard</a>
+    <div class="btn-container">
+        <a href="#" class="main-btn dashboard">Main Dashboard</a>
+        <a href="#" class="main-btn">Hyperlink</a>
+        <a href="#" class="main-btn">Questions</a>
+    </div>
 
     <script>
         function createStar() {
