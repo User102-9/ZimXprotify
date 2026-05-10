@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeamZero</title>
+    <!-- Link to Font Awesome for the Discord Icon -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         body {
             margin: 0;
@@ -25,15 +27,27 @@
             background-color: white;
             color: black;
             text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-size: 0.9rem;
-            z-index: 10; /* Keeps it above the falling stars */
-            transition: opacity 0.2s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
         .discord-btn:hover {
-            opacity: 0.8;
+            background-color: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        .discord-btn i {
+            font-size: 1.2rem;
+            color: #5865F2; /* Official Discord Blurple for the icon */
         }
 
         h1 {
@@ -64,8 +78,10 @@
 </head>
 <body>
 
-    <!-- Link added here. Just replace '#' with your actual invite link -->
-    <a href="#" class="discord-btn">OUR DISCORD</a>
+    <!-- REPLACE 'PASTE_YOUR_LINK_HERE' with your actual discord.gg link -->
+    <a href="PASTE_YOUR_LINK_HERE" class="discord-btn" target="_blank">
+        <i class="fab fa-discord"></i> OUR DISCORD
+    </a>
 
     <h1>BEAM ZERO</h1>
 
