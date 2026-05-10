@@ -19,7 +19,6 @@
             height: 100vh;
         }
 
-        /* Discord button stays visible on all screens */
         .discord-btn {
             position: absolute;
             top: 20px;
@@ -39,11 +38,10 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* Back Button - Hidden by default */
         .back-btn {
-            display: none; /* Shown only in dashboard */
+            display: none;
             position: absolute;
-            top: 60px; /* Slightly down from top */
+            top: 60px;
             left: 20px;
             background: transparent;
             border: 2px solid white;
@@ -57,29 +55,19 @@
             transition: 0.3s;
         }
 
-        .back-btn:hover {
-            background: white;
-            color: black;
-        }
+        .back-btn:hover { background: white; color: black; }
 
-        /* Main Home Screen Layout */
-        #home-screen {
+        #home-screen, #gen-screen, #link-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
             z-index: 2;
+            width: 100%;
         }
 
-        /* Dashboard Screen Layout - Hidden by default */
-        #dashboard-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 60px;
-            z-index: 2;
-        }
+        #gen-screen, #link-screen { display: none; margin-top: 40px; }
 
         h1 {
             font-size: 3.5rem;
@@ -87,12 +75,10 @@
             text-transform: uppercase;
             text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
             margin-bottom: 40px;
+            text-align: center;
         }
 
-        .btn-container {
-            display: flex;
-            gap: 40px; /* More space between them */
-        }
+        .btn-container { display: flex; gap: 40px; }
 
         .main-btn {
             padding: 18px 45px;
@@ -114,16 +100,39 @@
             transform: scale(1.05);
         }
 
-        .dashboard-pulse {
-            animation: pulse 2s infinite;
+        /* Input Styling for Hyperlink Page */
+        .input-box {
+            background: #1a1a1a;
+            border: 1px solid #ff0000;
+            color: white;
+            padding: 15px;
+            width: 300px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            outline: none;
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+        .selector-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
         }
 
-        /* Falling Stars */
+        .option {
+            background: #222;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #444;
+            transition: 0.3s;
+        }
+
+        .option:hover, .option.active {
+            border-color: #ff0000;
+            background: #331111;
+        }
+
         .star {
             position: absolute;
             top: -50px;
@@ -134,49 +143,67 @@
             animation: fall linear infinite;
         }
 
-        @keyframes fall {
-            to { transform: translateY(110vh); }
-        }
+        @keyframes fall { to { transform: translateY(110vh); } }
     </style>
 </head>
 <body>
 
-    <!-- Persistent Discord Link -->
     <a href="https://discord.gg" class="discord-btn" target="_blank">
         <i class="fab fa-discord"></i> OUR DISCORD
     </a>
 
-    <!-- Back Button (for Dashboard) -->
     <button class="back-btn" id="backBtn" onclick="goHome()">← BACK</button>
 
     <!-- HOME VIEW -->
     <div id="home-screen">
         <h1>BEAM ZERO</h1>
         <div class="btn-container">
-            <div class="main-btn dashboard-pulse" onclick="showDashboard()">Main Dashboard</div>
-            <div class="main-btn">Hyperlink</div>
+            <div class="main-btn" onclick="showScreen('gen-screen')">Generators</div>
+            <div class="main-btn" onclick="showScreen('link-screen')">Hyperlink</div>
             <div class="main-btn">Questions</div>
         </div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
-    <div id="dashboard-screen">
-        <h1>MAIN DASHBOARD</h1>
-        <!-- Add your dashboard content here! -->
-        <p style="color: #666;">Welcome to the control center.</p>
+    <!-- GENERATORS VIEW -->
+    <div id="gen-screen">
+        <h1>GENERATORS</h1>
+        <p>Select a generator to begin.</p>
+    </div>
+
+    <!-- HYPERLINK VIEW -->
+    <div id="link-screen">
+        <h1>HYPERLINK</h1>
+        <p>Choose type:</p>
+        <div class="selector-container">
+            <div class="option" onclick="selectType(this)">Profile</div>
+            <div class="option" onclick="selectType(this)">Private Server</div>
+        </div>
+        <input type="text" class="input-box" placeholder="Paste your link here...">
+        <br>
+        <div class="main-btn" style="padding: 10px 30px; font-size: 0.9rem;">Generate</div>
     </div>
 
     <script>
-        function showDashboard() {
+        function showScreen(screenId) {
             document.getElementById('home-screen').style.display = 'none';
-            document.getElementById('dashboard-screen').style.display = 'flex';
+            document.getElementById('gen-screen').style.display = 'none';
+            document.getElementById('link-screen').style.display = 'none';
+            
+            document.getElementById(screenId).style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
         }
 
         function goHome() {
             document.getElementById('home-screen').style.display = 'flex';
-            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('gen-screen').style.display = 'none';
+            document.getElementById('link-screen').style.display = 'none';
             document.getElementById('backBtn').style.display = 'none';
+        }
+
+        function selectType(element) {
+            let options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
         }
 
         function createStar() {
