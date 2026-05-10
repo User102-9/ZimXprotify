@@ -81,7 +81,6 @@
 
         .main-btn:hover { background-color: #ff0000; box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
 
-        /* Hyperlink View Styling */
         .input-box {
             background: #1a1a1a;
             border: 1px solid #ff0000;
@@ -111,6 +110,7 @@
             width: 80%;
             max-width: 500px;
             text-align: center;
+            color: #00ff00; /* Green text for the link result */
         }
 
         /* Chat UI Styling */
@@ -151,9 +151,9 @@
             <div class="option" onclick="selectType(this)">Private Server</div>
         </div>
         <input type="text" id="linkInput" class="input-box" placeholder="Paste your link here...">
-        <div class="main-btn" style="margin-top:20px; padding: 10px 30px;" onclick="generateLink()">Generate</div>
+        <div class="main-btn" id="genBtn" style="margin-top:20px; padding: 10px 30px;" onclick="generateLink()">Generate</div>
         
-        <div id="result-container"></div>
+        <div id="result-container">Shortening link...</div>
     </div>
 
     <!-- QUESTIONS VIEW -->
@@ -183,18 +183,29 @@
             document.getElementById('result-container').style.display = 'none';
         }
 
-        function generateLink() {
+        async function generateLink() {
             const input = document.getElementById('linkInput').value.trim();
             const resultBox = document.getElementById('result-container');
+            const genBtn = document.getElementById('genBtn');
 
             if (selectedType === "Profile" && input !== "") {
-                // Generate a random string for the "shortened" look
-                const shortId = Math.random().toString(36).substring(2, 8);
-                const shortLink = `https://bit.ly{shortId}`;
-                
-                // Set the exact format requested
-                resultBox.innerText = `[https://roblox.com](${shortLink})`;
+                genBtn.innerText = "Processing...";
                 resultBox.style.display = 'block';
+                resultBox.innerText = "Shortening your link...";
+
+                try {
+                    // Using TinyURL API to actually shorten the link
+                    const response = await fetch(`https://tinyurl.com{encodeURIComponent(input)}`);
+                    if (response.ok) {
+                        const shortLink = await response.text();
+                        resultBox.innerText = `[https://roblox.com](${shortLink})`;
+                    } else {
+                        resultBox.innerText = "Error shortening link. Please try again.";
+                    }
+                } catch (error) {
+                    resultBox.innerText = "Network error. Link shortening failed.";
+                }
+                genBtn.innerText = "Generate";
             } else if (input === "") {
                 alert("Please paste a link first!");
             } else {
