@@ -75,7 +75,6 @@
     <a href="https://discord.com" class="discord-btn" target="_blank">OUR DISCORD</a>
     <button class="back-btn" id="backBtn" onclick="goHome()">← BACK</button>
 
-    <!-- HOME VIEW -->
     <div id="home-screen" class="screen">
         <h1>BEAM ZERO</h1>
         <div class="btn-container">
@@ -85,7 +84,6 @@
         </div>
     </div>
 
-    <!-- HYPERLINK VIEW -->
     <div id="link-screen" class="screen">
         <h1>HYPERLINK</h1>
         <div class="selector-container">
@@ -98,13 +96,12 @@
         <p id="copy-status" style="font-size: 0.7rem; color: #888; margin-top: 5px; display: none;">Click box to copy!</p>
     </div>
 
-    <div id="gen-screen" class="screen"><h1>GENERATORS</h1><p>Tooling currently in development.</p></div>
-    <div id="q-screen" class="screen"><h1>QUESTIONS</h1><p>Community feed coming soon.</p></div>
+    <div id="gen-screen" class="screen"><h1>GENERATORS</h1></div>
+    <div id="q-screen" class="screen"><h1>QUESTIONS</h1></div>
 
     <script>
         let selectedType = "";
 
-        // UI NAVIGATION
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
@@ -123,41 +120,38 @@
             selectedType = el.innerText;
         }
 
-        // SHORTENER LOGIC
         async function processShorten() {
             const urlInput = document.getElementById('linkInput').value.trim();
             const res = document.getElementById('result-container');
             const status = document.getElementById('copy-status');
             const btn = document.getElementById('shortBtn');
 
-            if (!selectedType) return alert("Please select a type!");
-            if (!urlInput.startsWith('http')) return alert("Paste a valid link starting with http/https");
+            if (!selectedType) return alert("Select a type first!");
+            if (!urlInput.startsWith('http')) return alert("Paste a valid link!");
 
             res.style.display = 'block';
-            res.innerText = "Bypassing Security...";
+            res.innerText = "Connecting to Bridge...";
             res.classList.remove('glow-active');
             btn.disabled = true;
 
             try {
-                // Using CleanURI (Stable for Browser-to-API requests)
-                const response = await fetch('https://cleanuri.com', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `url=${encodeURIComponent(urlInput)}`
-                });
-
+                // TinyURL simple API
+                const apiTarget = `https://tinyurl.com{encodeURIComponent(urlInput)}`;
+                
+                // AllOrigins Proxy - Bypasses Vercel and Browser CORS blocks
+                const response = await fetch(`https://allorigins.win{encodeURIComponent(apiTarget)}`);
                 const data = await response.json();
 
-                if (data.result_url) {
-                    res.innerText = data.result_url;
+                if (data.contents && data.contents.includes("http")) {
+                    res.innerText = data.contents;
                     res.classList.add('glow-active');
                     status.style.display = "block";
                 } else {
-                    res.innerText = "Error: API rejected the link.";
+                    res.innerText = "Error: Proxy rejected request.";
                 }
             } catch (e) {
+                res.innerText = "Network Error: Proxy Blocked.";
                 console.error(e);
-                res.innerText = "Network Error: Try disabling VPN/Adblock.";
             } finally {
                 btn.disabled = false;
             }
@@ -167,13 +161,11 @@
             const text = document.getElementById('result-container').innerText;
             if (text.startsWith("http")) {
                 navigator.clipboard.writeText(text);
-                const status = document.getElementById('copy-status');
-                status.innerText = "COPIED!";
-                setTimeout(() => status.innerText = "Click box to copy!", 2000);
+                document.getElementById('copy-status').innerText = "COPIED!";
+                setTimeout(() => document.getElementById('copy-status').innerText = "Click box to copy!", 2000);
             }
         }
 
-        // STAR ANIMATION
         function createStar() {
             const star = document.createElement('div');
             star.className = 'star';
