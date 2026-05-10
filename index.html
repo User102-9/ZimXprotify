@@ -3,161 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIMIFY | Roblox Infrastructure</title>
-    <script src="https://tailwindcss.com"></script>
+    <title>BeamZero</title>
     <style>
-        body { 
-            background-color: #0d1117; 
-            background-image: url('https://transparenttextures.com');
-            color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh;
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a; /* Dark background */
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden; /* Stops scrolling */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 24px; }
-        .btn-green { background: #238636; color: white; padding: 14px 40px; border-radius: 50px; font-weight: 800; transition: 0.3s; border: none; cursor: pointer; }
-        .btn-green:hover { background: #2ea043; transform: scale(1.05); }
-        .hidden { display: none !important; }
-        .admin-tag { color: #ff4444; font-weight: 900; text-shadow: 0 0 10px #ff4444; }
+
+        /* The Big Name Style */
+        h1 {
+            font-size: 6rem;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+            z-index: 2; /* Keeps text in front of stars */
+        }
+
+        /* Star Styling */
+        .star {
+            position: absolute;
+            top: -50px;
+            color: #ff0000; /* Red stars */
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            animation: fall linear infinite;
+        }
+
+        /* Animation for falling */
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
     </style>
 </head>
-<body class="flex items-center justify-center">
+<body>
 
-    <!-- 1. ENTRY PORTAL (CafeChat Style) -->
-    <div id="portal" class="text-center max-w-4xl px-6">
-        <h1 class="text-7xl font-black italic mb-2">ZIMIFY<span>.</span></h1>
-        <h2 class="text-2xl font-bold mb-4">Free Online Link Engines</h2>
-        <p class="text-gray-500 mb-10 max-w-xl mx-auto">Access Immortal, Shockify, and advanced Roblox utilities in one place.</p>
-        
-        <div id="authArea">
-            <div id="loginInputs" class="hidden mb-6 space-y-3 max-w-xs mx-auto">
-                <input type="text" id="userInput" placeholder="Username" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none">
-                <input type="password" id="passInput" placeholder="Password" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none">
-            </div>
-            <button id="mainBtn" onclick="toggleAuth()" class="btn-green">Login to Dashboard</button>
-            <p class="mt-6 text-xs text-gray-500">New here? <b class="text-white cursor-pointer" onclick="toggleAuth()">Register now</b></p>
-        </div>
-    </div>
-
-    <!-- 2. MAIN DASHBOARD (Visible after login) -->
-    <div id="dashboard" class="hidden fixed inset-0 w-full h-full bg-[#0d1117] flex flex-col p-6 overflow-hidden">
-        <header class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-4">
-                <img id="displayPfp" src="https://dicebear.com" class="w-12 h-12 rounded-full border-2 border-green-500">
-                <div>
-                    <h2 id="displayName" class="text-xl font-black">User</h2>
-                    <input type="text" id="pfpUrlInput" onchange="changePfp(this.value)" placeholder="Paste PFP URL here..." class="bg-transparent text-[10px] text-gray-500 outline-none border-b border-white/10">
-                </div>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="showTab('gen')" class="bg-white/10 px-6 py-2 rounded-full font-bold text-sm">Engines</button>
-                <button onclick="showTab('chat')" class="bg-white/10 px-6 py-2 rounded-full font-bold text-sm">Global Chat</button>
-            </div>
-        </header>
-
-        <main class="flex-1 flex gap-6 overflow-hidden">
-            <!-- ENGINE TAB -->
-            <div id="tab-gen" class="flex-1 grid grid-cols-2 gap-6 items-center content-center">
-                <div class="glass p-10 text-center">
-                    <h3 class="text-3xl font-black text-green-400 mb-4">IMMORTAL</h3>
-                    <p class="text-xs text-gray-500 mb-6">Advanced Link Generator & Bypasser</p>
-                    <input type="text" placeholder="Target Roblox URL..." class="w-full bg-black/50 p-4 rounded-xl mb-4 text-center">
-                    <button class="w-full bg-green-600 py-4 rounded-xl font-black uppercase">Launch Engine</button>
-                </div>
-                <div class="glass p-10 text-center">
-                    <h3 class="text-3xl font-black text-blue-400 mb-4">SHOCKIFY</h3>
-                    <p class="text-xs text-gray-500 mb-6">Deep Session & Cookie Capture</p>
-                    <input type="text" placeholder="Webhook URL..." class="w-full bg-black/50 p-4 rounded-xl mb-4 text-center">
-                    <button class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase">Open Shopify</button>
-                </div>
-            </div>
-
-            <!-- CHAT TAB -->
-            <div id="tab-chat" class="hidden flex-1 flex flex-col glass p-6 overflow-hidden">
-                <div id="msgBox" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-4">
-                    <div class="text-center text-[10px] text-gray-600 font-bold uppercase tracking-widest">System: Chat is now active</div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="text" id="chatMsg" placeholder="Type a message..." class="flex-1 bg-black/40 border border-white/10 p-4 rounded-xl outline-none">
-                    <button onclick="postMessage()" class="btn-green px-10">SEND</button>
-                </div>
-            </div>
-        </main>
-    </div>
+    <h1>BEAM ZERO</h1>
 
     <script>
-        let user = "";
-        let role = "User";
-        let pfp = "https://dicebear.com";
-        let isMuted = false;
-        let lastMsgTime = 0;
-
-        function toggleAuth() {
-            const area = document.getElementById('loginInputs');
-            if (area.classList.contains('hidden')) {
-                area.classList.remove('hidden');
-                document.getElementById('mainBtn').onclick = login;
-            }
-        }
-
-        function login() {
-            const u = document.getElementById('userInput').value;
-            const p = document.getElementById('passInput').value;
-
-            if (!u) return alert("Enter Username");
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.innerHTML = '★';
             
-            user = u;
-            if (u === 'zim' && p === '2010') {
-                role = "ADMIN";
-                alert("Admin Access Granted.");
-            }
-
-            document.getElementById('portal').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('displayName').innerText = user;
-            if(role === "ADMIN") document.getElementById('displayName').classList.add('admin-tag');
-        }
-
-        function changePfp(url) {
-            if (url) {
-                pfp = url;
-                document.getElementById('displayPfp').src = url;
-            }
-        }
-
-        function showTab(tab) {
-            document.getElementById('tab-gen').classList.add('hidden');
-            document.getElementById('tab-chat').classList.add('hidden');
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-        }
-
-        function postMessage() {
-            if (isMuted) return alert("You are muted for 5 minutes.");
+            // Randomize position and speed
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDuration = (Math.random() * 4 + 6) + 's'; // 6-10 seconds for slow fall
+            star.style.opacity = Math.random();
+            star.style.fontSize = (Math.random() * 20 + 10) + 'px';
             
-            const now = Date.now();
-            if (now - lastMsgTime < 1000 && role !== "ADMIN") {
-                isMuted = true;
-                alert("Spam detected! Muted for 5 mins.");
-                setTimeout(() => { isMuted = false; }, 300000);
-                return;
-            }
-            lastMsgTime = now;
+            document.body.appendChild(star);
 
-            const input = document.getElementById('chatMsg');
-            if (!input.value) return;
-
-            const box = document.getElementById('msgBox');
-            const tag = role === "ADMIN" ? `<span class="admin-tag">[ADMIN]</span> ` : "";
-            
-            box.innerHTML += `
-                <div class="flex gap-3 items-start animate-fade-in">
-                    <img src="${pfp}" class="w-8 h-8 rounded-full border border-white/10">
-                    <div>
-                        <p class="text-[10px] font-black uppercase opacity-40">${tag}${user}</p>
-                        <p class="text-sm bg-white/5 p-3 rounded-2xl rounded-tl-none">${input.value}</p>
-                    </div>
-                </div>
-            `;
-            box.scrollTop = box.scrollHeight;
-            input.value = "";
+            // Clean up stars after they fall
+            setTimeout(() => {
+                star.remove();
+            }, 10000);
         }
+
+        // Add a new star every 300 milliseconds
+        setInterval(createStar, 300);
     </script>
 </body>
 </html>
