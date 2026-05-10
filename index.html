@@ -8,38 +8,36 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #0a0a0a; /* Dark background */
+            background-color: #0a0a0a;
             color: white;
             font-family: 'Arial Black', sans-serif;
-            overflow: hidden; /* Stops scrolling */
+            overflow: hidden;
+            /* Changed from flex centering to a standard column layout */
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
         }
 
-        /* The Big Name Style */
+        /* The Smaller Name at the Top */
         h1 {
-            font-size: 6rem;
-            letter-spacing: 15px;
+            font-size: 3rem;       /* Smaller font size */
+            letter-spacing: 5px;   /* Letters are closer together */
             text-transform: uppercase;
-            margin: 0;
-            text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
-            z-index: 2; /* Keeps text in front of stars */
+            margin-top: 40px;      /* Pushes it down slightly from the very top */
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            z-index: 2;
         }
 
-        /* Star Styling */
         .star {
             position: absolute;
             top: -50px;
-            color: #ff0000; /* Red stars */
+            color: #ff0000;
             user-select: none;
             pointer-events: none;
             z-index: 1;
             animation: fall linear infinite;
         }
 
-        /* Animation for falling */
         @keyframes fall {
             to {
                 transform: translateY(110vh);
@@ -57,21 +55,18 @@
             star.classList.add('star');
             star.innerHTML = '★';
             
-            // Randomize position and speed
             star.style.left = Math.random() * 100 + 'vw';
-            star.style.animationDuration = (Math.random() * 4 + 6) + 's'; // 6-10 seconds for slow fall
+            star.style.animationDuration = (Math.random() * 4 + 6) + 's';
             star.style.opacity = Math.random();
-            star.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            star.style.fontSize = (Math.random() * 15 + 10) + 'px';
             
             document.body.appendChild(star);
 
-            // Clean up stars after they fall
             setTimeout(() => {
                 star.remove();
             }, 10000);
         }
 
-        // Add a new star every 300 milliseconds
         setInterval(createStar, 300);
     </script>
 </body>
