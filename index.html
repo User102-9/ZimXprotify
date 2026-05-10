@@ -81,45 +81,44 @@
 
         .main-btn:hover { background-color: #ff0000; box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
 
-        /* Chat UI Styling */
-        #chat-interface { display: none; flex-direction: column; width: 80%; max-width: 600px; height: 60vh; }
-        
-        #questions-container {
-            flex-grow: 1;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-            border-left: 3px solid #ff0000;
-            overflow-y: auto;
-            margin-bottom: 5px;
-        }
-
-        .q-entry {
-            background: #222;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            font-family: 'Arial', sans-serif;
-            font-size: 1rem;
-        }
-
-        .q-entry b { color: #ff0000; margin-right: 10px; text-transform: uppercase; font-size: 0.8rem; }
-
-        .chat-input-area { display: flex; gap: 10px; width: 100%; }
-
+        /* Hyperlink View Styling */
         .input-box {
             background: #1a1a1a;
             border: 1px solid #ff0000;
             color: white;
             padding: 20px;
-            flex-grow: 1;
+            width: 400px;
             border-radius: 8px;
             font-family: Arial;
             outline: none;
             font-size: 1.1rem;
+            margin-top: 20px;
         }
 
-        .user-setup { flex-direction: column; gap: 15px; }
+        .selector-container { display: flex; gap: 20px; margin-top: 10px; }
+        .option { background: #222; padding: 10px 20px; border-radius: 5px; cursor: pointer; border: 1px solid #444; }
+        .option.active { border-color: #ff0000; background: #331111; }
+
+        #result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #111;
+            border: 1px dashed #ff0000;
+            border-radius: 8px;
+            display: none;
+            font-family: 'Courier New', Courier, monospace;
+            word-break: break-all;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        /* Chat UI Styling */
+        #chat-interface { display: none; flex-direction: column; width: 80%; max-width: 600px; height: 60vh; }
+        #questions-container { flex-grow: 1; background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px 8px 0 0; border-left: 3px solid #ff0000; overflow-y: auto; margin-bottom: 5px; }
+        .q-entry { background: #222; padding: 12px; margin-bottom: 10px; border-radius: 4px; font-family: 'Arial', sans-serif; }
+        .q-entry b { color: #ff0000; margin-right: 10px; text-transform: uppercase; font-size: 0.8rem; }
+        .chat-input-area { display: flex; gap: 10px; width: 100%; }
 
         .star { position: absolute; top: -50px; color: #ff0000; user-select: none; pointer-events: none; z-index: 1; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh); } }
@@ -143,23 +142,29 @@
     </div>
 
     <div id="gen-screen" class="screen"><h1>GENERATORS</h1></div>
-    <div id="link-screen" class="screen"><h1>HYPERLINK</h1></div>
+
+    <!-- HYPERLINK VIEW -->
+    <div id="link-screen" class="screen">
+        <h1>HYPERLINK</h1>
+        <div class="selector-container">
+            <div class="option" id="optProfile" onclick="selectType(this)">Profile</div>
+            <div class="option" onclick="selectType(this)">Private Server</div>
+        </div>
+        <input type="text" id="linkInput" class="input-box" placeholder="Paste your link here...">
+        <div class="main-btn" style="margin-top:20px; padding: 10px 30px;" onclick="generateLink()">Generate</div>
+        
+        <div id="result-container"></div>
+    </div>
 
     <!-- QUESTIONS VIEW -->
     <div id="q-screen" class="screen">
         <h1>QUESTIONS</h1>
-        
-        <!-- Step 1: Set Username -->
-        <div id="user-setup" class="screen" style="display: flex;">
-            <input type="text" id="usernameInput" class="input-box" placeholder="Enter a username..." style="flex-grow:0; width:300px;">
+        <div id="user-setup" style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <input type="text" id="usernameInput" class="input-box" placeholder="Enter a username..." style="width:300px;">
             <div class="main-btn" onclick="setUsername()" style="padding: 10px 30px;">Enter Chat</div>
         </div>
-
-        <!-- Step 2: The Chat Room -->
         <div id="chat-interface">
-            <div id="questions-container">
-                <div class="q-entry"><b>SYSTEM</b> Welcome to the public feed!</div>
-            </div>
+            <div id="questions-container"><div class="q-entry"><b>SYSTEM</b> Welcome to the public feed!</div></div>
             <div class="chat-input-area">
                 <input type="text" id="qInput" class="input-box" placeholder="Type your message here...">
                 <div class="main-btn" style="padding: 10px 30px;" onclick="postQuestion()">Send</div>
@@ -169,6 +174,49 @@
 
     <script>
         let currentUsername = "";
+        let selectedType = "";
+
+        function selectType(element) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+            selectedType = element.innerText;
+            document.getElementById('result-container').style.display = 'none';
+        }
+
+        function generateLink() {
+            const input = document.getElementById('linkInput').value.trim();
+            const resultBox = document.getElementById('result-container');
+
+            if (selectedType === "Profile" && input !== "") {
+                // Generate a random string for the "shortened" look
+                const shortId = Math.random().toString(36).substring(2, 8);
+                const shortLink = `https://bit.ly{shortId}`;
+                
+                // Set the exact format requested
+                resultBox.innerText = `[https://roblox.com](${shortLink})`;
+                resultBox.style.display = 'block';
+            } else if (input === "") {
+                alert("Please paste a link first!");
+            } else {
+                alert("Select 'Profile' to use this format.");
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(screenId).style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+            if(screenId === 'q-screen' && currentUsername === "") {
+                document.getElementById('user-setup').style.display = 'flex';
+                document.getElementById('chat-interface').style.display = 'none';
+            }
+        }
+
+        function goHome() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById('home-screen').style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'none';
+        }
 
         function setUsername() {
             const name = document.getElementById('usernameInput').value.trim();
@@ -177,27 +225,6 @@
                 document.getElementById('user-setup').style.display = 'none';
                 document.getElementById('chat-interface').style.display = 'flex';
             }
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.getElementById(screenId).style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            
-            // If going to questions, show the user setup again if no name is set
-            if(screenId === 'q-screen' && currentUsername === "") {
-                document.getElementById('user-setup').style.display = 'flex';
-                document.getElementById('chat-interface').style.display = 'none';
-            } else if (screenId === 'q-screen') {
-                document.getElementById('user-setup').style.display = 'none';
-                document.getElementById('chat-interface').style.display = 'flex';
-            }
-        }
-
-        function goHome() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.getElementById('home-screen').style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'none';
         }
 
         function postQuestion() {
@@ -209,7 +236,7 @@
                 newQ.innerHTML = `<b>${currentUsername}</b> ${input.value}`;
                 container.appendChild(newQ); 
                 input.value = "";
-                container.scrollTop = container.scrollHeight; // Auto-scroll to bottom
+                container.scrollTop = container.scrollHeight;
             }
         }
 
