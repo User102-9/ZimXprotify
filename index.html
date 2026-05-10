@@ -16,8 +16,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
         }
 
+        /* Discord button stays visible on all screens */
         .discord-btn {
             position: absolute;
             top: 20px;
@@ -28,7 +30,7 @@
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 0.8rem;
-            z-index: 10;
+            z-index: 100;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -37,36 +39,64 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        .discord-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        /* Back Button - Hidden by default */
+        .back-btn {
+            display: none; /* Shown only in dashboard */
+            position: absolute;
+            top: 60px; /* Slightly down from top */
+            left: 20px;
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: 0.3s;
         }
 
-        .discord-btn i {
-            font-size: 1.2rem;
-            color: #5865F2;
+        .back-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        /* Main Home Screen Layout */
+        #home-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* Dashboard Screen Layout - Hidden by default */
+        #dashboard-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            z-index: 2;
         }
 
         h1 {
-            font-size: 3.5rem; /* Made slightly bigger */
+            font-size: 3.5rem;
             letter-spacing: 5px;
             text-transform: uppercase;
-            margin-top: 80px; /* Pushed down more */
-            margin-bottom: 40px; /* More space before buttons */
             text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
-            z-index: 2;
+            margin-bottom: 40px;
         }
 
-        /* Container to keep buttons side-by-side */
         .btn-container {
             display: flex;
-            gap: 20px;
-            z-index: 2;
+            gap: 40px; /* More space between them */
         }
 
         .main-btn {
-            padding: 18px 45px; /* Bigger padding */
-            font-size: 1.1rem; /* Bigger font */
+            padding: 18px 45px;
+            font-size: 1.1rem;
             color: white;
             background: transparent;
             border: 2px solid #ff0000;
@@ -75,8 +105,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-            text-align: center;
+            cursor: pointer;
         }
 
         .main-btn:hover {
@@ -85,17 +114,16 @@
             transform: scale(1.05);
         }
 
-        /* Pulsing effect only for the Dashboard to highlight it */
-        .dashboard {
+        .dashboard-pulse {
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
             50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
-            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
         }
 
+        /* Falling Stars */
         .star {
             position: absolute;
             top: -50px;
@@ -113,19 +141,44 @@
 </head>
 <body>
 
+    <!-- Persistent Discord Link -->
     <a href="https://discord.gg" class="discord-btn" target="_blank">
         <i class="fab fa-discord"></i> OUR DISCORD
     </a>
 
-    <h1>BEAM ZERO</h1>
+    <!-- Back Button (for Dashboard) -->
+    <button class="back-btn" id="backBtn" onclick="goHome()">← BACK</button>
 
-    <div class="btn-container">
-        <a href="#" class="main-btn dashboard">Main Dashboard</a>
-        <a href="#" class="main-btn">Hyperlink</a>
-        <a href="#" class="main-btn">Questions</a>
+    <!-- HOME VIEW -->
+    <div id="home-screen">
+        <h1>BEAM ZERO</h1>
+        <div class="btn-container">
+            <div class="main-btn dashboard-pulse" onclick="showDashboard()">Main Dashboard</div>
+            <div class="main-btn">Hyperlink</div>
+            <div class="main-btn">Questions</div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard-screen">
+        <h1>MAIN DASHBOARD</h1>
+        <!-- Add your dashboard content here! -->
+        <p style="color: #666;">Welcome to the control center.</p>
     </div>
 
     <script>
+        function showDashboard() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+        }
+
+        function goHome() {
+            document.getElementById('home-screen').style.display = 'flex';
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
         function createStar() {
             const star = document.createElement('div');
             star.classList.add('star');
