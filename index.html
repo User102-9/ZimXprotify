@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeamZero</title>
+    <!-- Font Awesome for Discord Icon -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         body {
@@ -71,15 +72,22 @@
         .q-entry { background: #222; padding: 12px; margin-bottom: 10px; border-radius: 4px; }
         .q-entry b { color: #ff0000; margin-right: 10px; text-transform: uppercase; font-size: 0.8rem; }
 
-        /* Star Background */
-        .star { position: absolute; top: -50px; color: #ff0000; pointer-events: none; z-index: 1; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(110vh); } }
+        /* Star Background Animation */
+        .star { 
+            position: absolute; color: #ff0000; pointer-events: none; z-index: 1; 
+            font-size: 10px; opacity: 0.8;
+            animation: fall linear forwards; 
+        }
+        @keyframes fall { 
+            from { transform: translateY(-50px); }
+            to { transform: translateY(110vh); } 
+        }
     </style>
 </head>
 <body>
 
     <a href="https://discord.gg" class="discord-btn" target="_blank">
-        <i class="fab fa-discord"></i> OUR DISCORD
+        OUR DISCORD
     </a>
 
     <button class="back-btn" id="backBtn" onclick="goHome()">← BACK</button>
@@ -129,11 +137,12 @@
         let currentUsername = "";
         let selectedType = "";
 
+        // UI NAVIGATION
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
-            if(id==='q-screen' && !currentUsername) {
+            if(id === 'q-screen' && !currentUsername) {
                 document.getElementById('user-setup').style.display = 'flex';
                 document.getElementById('chat-interface').style.display = 'none';
             }
@@ -145,6 +154,7 @@
             document.getElementById('backBtn').style.display = 'none';
         }
 
+        // HYPERLINK LOGIC
         function selectType(el) {
             document.querySelectorAll('.option').forEach(o => o.classList.remove('active'));
             el.classList.add('active');
@@ -157,44 +167,44 @@
             const res = document.getElementById('result-container');
             const status = document.getElementById('copy-status');
             
-            if (urlInput.startsWith('http') && selectedType === "Profile") {
+            if (urlInput.startsWith('http') && selectedType !== "") {
                 res.style.display = 'block';
                 res.innerText = "Shortening instantly...";
                 res.style.color = "white";
-                status.style.display = "none";
-
-                const proxy = "https://corsproxy.io?";
-                // Generate random ID
-                const randomId = Math.random().toString(36).substring(2, 8);
-                const api = `https://is.gd{encodeURIComponent(urlInput)}&shorturl=${randomId}`;
 
                 try {
-                    const response = await fetch(proxy + api);
-                    if (response.ok) {
-                        const short = await response.text();
-                        res.innerText = `[https://roblox.com](${short})`;
-                        res.style.color = "#00ff00";
+                    // API implementation using is.gd with a CORS proxy
+                    const target = `https://is.gd{encodeURIComponent(urlInput)}`;
+                    const response = await fetch(`https://corsproxy.io{encodeURIComponent(target)}`);
+                    const shortUrl = await response.text();
+
+                    if (shortUrl.includes("https://is.gd")) {
+                        res.innerText = shortUrl;
+                        res.style.color = "#ff0000";
                         status.style.display = "block";
+                    } else {
+                        res.innerText = "Error: Use a valid URL";
                     }
                 } catch (e) {
-                    res.innerText = "Error: Check connection.";
+                    res.innerText = "Connection failed.";
                 }
-            } else if (urlInput === "") {
-                res.style.display = 'none';
-                status.style.display = "none";
             }
         }
 
         function copyToClipboard() {
             const text = document.getElementById('result-container').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Copied to clipboard!");
-            });
+            if (text.includes("is.gd")) {
+                navigator.clipboard.writeText(text);
+                const status = document.getElementById('copy-status');
+                status.innerText = "COPIED TO CLIPBOARD!";
+                setTimeout(() => status.innerText = "Click box to copy link!", 2000);
+            }
         }
 
+        // CHAT LOGIC
         function setUsername() {
             const name = document.getElementById('usernameInput').value.trim();
-            if(name) {
+            if(name.length > 2) {
                 currentUsername = name;
                 document.getElementById('user-setup').style.display = 'none';
                 document.getElementById('chat-interface').style.display = 'flex';
@@ -202,25 +212,30 @@
         }
 
         function postQuestion() {
-            const msg = document.getElementById('qInput');
-            if(!msg.value.trim()) return;
-            const entry = document.createElement('div');
-            entry.className = 'q-entry';
-            entry.innerHTML = `<b>${currentUsername}</b> ${msg.value}`;
-            document.getElementById('questions-container').appendChild(entry);
-            msg.value = "";
-            document.getElementById('questions-container').scrollTop = 99999;
+            const msg = document.getElementById('qInput').value.trim();
+            if(msg !== "") {
+                const container = document.getElementById('questions-container');
+                const entry = document.createElement('div');
+                entry.className = 'q-entry';
+                entry.innerHTML = `<b>${currentUsername}</b> ${msg}`;
+                container.appendChild(entry);
+                container.scrollTop = container.scrollHeight;
+                document.getElementById('qInput').value = "";
+            }
         }
 
-        setInterval(() => {
-            const s = document.createElement('div');
-            s.className = 'star'; s.innerHTML = '★';
-            s.style.left = Math.random() * 100 + 'vw';
-            s.style.animationDuration = (Math.random() * 4 + 5) + 's';
-            s.style.fontSize = (Math.random() * 10 + 10) + 'px';
-            document.body.appendChild(s);
-            setTimeout(() => s.remove(), 6000);
-        }, 200);
+        // STAR ANIMATION
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.innerHTML = '★';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 5000);
+        }
+        setInterval(createStar, 300);
+
     </script>
 </body>
 </html>
